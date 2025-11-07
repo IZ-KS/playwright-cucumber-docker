@@ -9,13 +9,11 @@ Given('User can access the application', async function () {
     expect(await pageFixture.page.title()).toBe('Swag Labs');
 });
 
-Given('User enters username as {string}', async function (username : string) {   
+Given('User enters login credentials with username as {string} and password as {string}', 
+    async function (username : string, password : string) {   
     await pageFixture.page.locator('#user-name').fill(username);
-});
-
-Given('User enters password as {string}', async function (password : string) {   
-   await pageFixture.page.locator('#password').fill(password);
-   console.log('Password entered ' + password);
+    await pageFixture.page.locator('#password').fill(password);
+    console.log('Password entered ' + password);
 });
 
 When('User clicks on the login button', async function () {   
