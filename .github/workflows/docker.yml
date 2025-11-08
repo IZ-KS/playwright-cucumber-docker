@@ -1,4 +1,4 @@
-name: Cucumber Tests with Docker
+name: Cross-Platform Build & Test
 
 on:
   push:
@@ -17,17 +17,35 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
-    - name: Set up Docker Buildx
+
+    # 1. Setup Node.js (Required for a non-Docker "build" on all OSes)
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20' # Use your required Node version
+
+    # 2. Universal Build/Test Step (Executes on Windows and macOS)
+    - name: Run Node.js Build/Install/Lint
+      # This runs if NOT Linux. You can replace 'npm install' with a command 
+      # like 'npm run build' or 'npm test' if you want a more substantial build.
+      if: runner.os != 'Linux'
+      run: npm install
+
+    # 3. Docker-Specific Steps (Only on Linux)
+    # The Linux runner handles the Docker build and the actual tests inside the container.
+    - name: Set up Docker Buildx (Linux Only)
+      if: runner.os == 'Linux'
       uses: docker/setup-buildx-action@v3
     
-    - name: Log in to Docker Hub
+    - name: Log in to Docker Hub (Linux Only)
+      if: runner.os == 'Linux'
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
-    - name: Build and push Docker image
+    - name: Build and push Docker image (Linux Only)
+      if: runner.os == 'Linux'
       uses: docker/build-push-action@v5
       with:
         context: .
@@ -37,15 +55,18 @@ jobs:
           ${{ secrets.DOCKER_USERNAME }}/playwright-cucumber-docker:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-    
-    - name: Run Cucumber tests in Docker
+        
+    - name: Run Cucumber tests in Docker (Linux Only)
+      if: runner.os == 'Linux'
       run: |
         docker run --rm \
           -v ${{ github.workspace }}/test-results:/app/test-results \
           ${{ secrets.DOCKER_USERNAME }}/playwright-cucumber-docker:latest
     
+    # 4. Conditional Artifact Upload
     - name: Upload Cucumber test results
-      if: ${{ !cancelled() }}
+      # Only runs if the Linux job was successful and produced the files.
+      if: ${{ runner.os == 'Linux' && !cancelled() }}
       uses: actions/upload-artifact@v4
       with:
         name: cucumber-test-results
