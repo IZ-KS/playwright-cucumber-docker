@@ -1,0 +1,11 @@
+**Content:**
+```
+node_modules
+test-results
+.git
+.github
+.vscode
+*.log
+npm-debug.log*
+.DS_Store
+README.md
