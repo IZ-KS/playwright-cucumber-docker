@@ -312,6 +312,8 @@ open test-results/cucumber-report.html
 start test-results/cucumber-report.html
 ```
 
+Adding Building Docker image
+
 ## 🚧 Coming Soon
 
 1. Fork the repository
