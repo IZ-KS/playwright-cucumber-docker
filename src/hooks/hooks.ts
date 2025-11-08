@@ -23,7 +23,9 @@ Before(async function () {
 });
 
 // --- 3. Context/Page Cleanup (Runs after EACH scenario) ---
-After(async function () {
+After(async function ({ pickle}) {
+    const img = await pageFixture.page.screenshot({path :`./test-results/screenshot.png/${pickle.name}.png` , type : "png"});
+    await this.attach(img, "image/png");
     // Close the context, which automatically closes the page and clears all session data
     if (pageFixture.context) {
         await pageFixture.context.close();

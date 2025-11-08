@@ -6,6 +6,7 @@ import { pageFixture } from '../../hooks/pageFixtures';
 When ('User proceeds to checkout', async function () {
     await pageFixture.page.locator('#shopping_cart_container').click();
     await pageFixture.page.locator('#checkout').click();
+    console.log('User checkout clicked');
 });
 
 When ('Users enters the necessary checkout information', async function () {
@@ -19,4 +20,15 @@ Then ('The order should be completed successfully', async function () {
     await pageFixture.page.locator('#finish').click();
     const confirmationMessage = pageFixture.page.locator('.complete-header');
     await expect(confirmationMessage).toHaveText('Thank you for your order!');
+    console.log('Order completed successfully');
+});
+
+When ('Users did not enters the necessary checkout information', async function () {
+    await pageFixture.page.locator('#continue').click();
+});
+
+Then ('The order should be failed', async function () {
+    const errorMessage = pageFixture.page.locator('.error-message-container');
+    await expect(errorMessage).toHaveText('Error: First Name is required');
+    console.log('Order failed successfully');
 });
