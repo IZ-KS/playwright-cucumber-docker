@@ -30,8 +30,8 @@ jobs:
         context: .
         push: true
         tags: |
-          ${{ secrets.DOCKER_USERNAME }}/playwright-cucumber-tests:latest
-          ${{ secrets.DOCKER_USERNAME }}/playwright-cucumber-tests:${{ github.sha }}
+          ${{ secrets.DOCKER_USERNAME }}/playwright-cucumber-docker:latest
+          ${{ secrets.DOCKER_USERNAME }}/playwright-cucumber-docker:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
     
@@ -39,7 +39,7 @@ jobs:
       run: |
         docker run --rm \
           -v ${{ github.workspace }}/test-results:/app/test-results \
-          ${{ secrets.DOCKER_USERNAME }}/playwright-cucumber-tests:latest
+          ${{ secrets.DOCKER_USERNAME }}/playwright-cucumber-docker:latest
     
     - name: Upload Cucumber test results
       if: ${{ !cancelled() }}
