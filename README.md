@@ -23,8 +23,8 @@ This project is an end-to-end test automation framework built with Playwright an
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
-cd <your-project-name>
+git clone https://github.com/IZ-KS/playwright-cucumber-docker.git
+cd https://github.com/IZ-KS/playwright-cucumber-docker.git
 ```
 
 ### 2. Install dependencies
