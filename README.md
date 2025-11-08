@@ -2,7 +2,7 @@
 
 ## 📋 Description
 
-This project is an end-to-end test automation framework built with Playwright and Cucumber, containerized with Docker. It follows the Page Object Model (POM) design pattern for maintainable and scalable test automation.
+This project is an end-to-end test automation framework built with Playwright and Cucumber, containerized with Docker. 
 
 ## 🚀 Features
 
