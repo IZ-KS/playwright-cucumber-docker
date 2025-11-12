@@ -6,7 +6,7 @@ Feature: List of remove from cart scenarios
     Scenario Outline: User adds an item to the cart
         And User enters login credentials with username as "<username>" and password as "<password>"
         And User clicks on the login button
-        When User adds the product to the cart
+        When User adds "Sauce Labs Backpack" to the cart
         And User removes the product from the cart
         Then The cart icon remain unchanged
         
