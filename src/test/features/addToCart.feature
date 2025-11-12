@@ -1,15 +1,14 @@
-Feature: List of add to cart scenarios
+Feature: Shopping Cart Functionality
 
     Background:
-    Given User can access the application
+        Given User can access the application
+        And User is logged in as "standard_user"
 
-    Scenario Outline: User adds an item to the cart
-        And User enters login credentials with username as "<username>" and password as "<password>"
-        And User clicks on the login button
-        When User adds the product to the cart
-        Then The cart icon should get updated
+    Scenario: Add single item to cart
+        When User adds "Sauce Labs Backpack" to the cart
+        Then The cart icon should show 1 item
 
-    Examples:
-    |  username       | password        | 
-    |  standard_user  | secret_sauce    | 
-        
+    Scenario: Add multiple items to cart
+        When User adds "Sauce Labs Backpack" to the cart
+        And User adds "Sauce Labs Bike Light" to the cart
+        Then The cart icon should show 2 items

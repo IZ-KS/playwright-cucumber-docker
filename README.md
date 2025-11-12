@@ -99,20 +99,6 @@ The `cucumber.json` file in the root directory configures test execution:
 }
 ```
 
-### NPM Scripts
-
-```json
-{
-  "scripts": {
-    "test": "cucumber-js",
-    "test:headed": "cucumber-js --parallel 1",
-    "test:chromium": "BROWSER=chromium cucumber-js",
-    "test:firefox": "BROWSER=firefox cucumber-js",
-    "test:webkit": "BROWSER=webkit cucumber-js"
-  }
-}
-```
-
 ## 🧪 Running Tests
 
 ### Run All Tests (Headless)
@@ -135,47 +121,6 @@ npm run test:webkit
 ### Run Specific Feature File
 ```bash
 npx cucumber-js src/test/features/login.feature
-```
-
-## 📝 Writing Tests
-
-### Feature File Example
-
-```gherkin
-Feature: Shopping Cart Functionality
-
-  Background:
-    Given User can access the application
-
-  Scenario Outline: User adds an item to the cart
-    And User enters username as "<username>"
-    And User enters password as "<password>"
-    When User clicks on the login button
-    When User adds the product to the cart
-    Then The cart icon should get updated
-
-    Examples:
-      | username      | password     | productName         |
-      | standard_user | secret_sauce | Sauce Labs Backpack |
-```
-
-### Step Definition Example
-
-```typescript
-import { Given, When, Then } from '@cucumber/cucumber';
-import { pageFixture } from '../../hooks/pageFixtures';
-
-Given('User enters username as {string}', async function (username: string) {
-  await pageFixture.page.locator('#user-name').fill(username);
-});
-
-Given('User enters password as {string}', async function (password: string) {
-  await pageFixture.page.locator('#password').fill(password);
-});
-
-When('User clicks on the login button', async function () {
-  await pageFixture.page.locator('#login-button').click();
-});
 ```
 
 ### Hooks Example
@@ -213,7 +158,7 @@ AfterAll(async function () {
 });
 ```
 
-## 📊 Test Reports
+## 📊 Test Reports 
 
 After test execution, reports are automatically generated in the `test-results/` directory:
 

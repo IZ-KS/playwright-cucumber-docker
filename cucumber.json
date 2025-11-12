@@ -4,7 +4,7 @@
             "snipperInterface": "async-await"
         },
         "paths": [
-            "src/test/features/checkOut.feature"
+            "src/test/features/addToCart.feature"
         ],
         "publishQuiet": true,
         "dryRun": false,
