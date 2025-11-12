@@ -1,50 +1,46 @@
 # Playwright + Cucumber + Docker Test Automation Framework
 
-![Tests](https://github.com/IZ-KS/playwright-cucumber-docker/workflows/Playwright%20Tests/badge.svg)
+![Tests](https://github.com/IZ-KS/playwright-cucumber-docker/workflows/Cucumber%20Tests%20with%20Docker/badge.svg)
 
-A modern end-to-end test automation framework combining Playwright's reliability with Cucumber's BDD approach, containerized with Docker for consistent execution across environments.
+## 📋 Description
 
-## ✨ Features
+This project is an end-to-end test automation framework built with Playwright and Cucumber, containerized with Docker for learning purposes. It follows BDD practices with Gherkin syntax for maintainable and scalable test automation.
 
-- **🎭 Playwright** - Fast and reliable end-to-end testing across all modern browsers
-- **🥒 Cucumber BDD** - Behavior-Driven Development with Gherkin syntax for readable test scenarios
-- **📘 TypeScript** - Type-safe test automation with IntelliSense support
-- **🐳 Docker** - Containerized test execution for consistent environments
-- **🏗️ Page Object Model** - Organized and maintainable code structure
-- **📊 Rich Reporting** - HTML and JSON reports with screenshots on failure
-- **🔄 CI/CD Ready** - GitHub Actions workflow included
+## 🚀 Features
 
-## 📋 Prerequisites
+- **Playwright**: Fast and reliable end-to-end testing (v1.56.1)
+- **Cucumber BDD**: Behavior-Driven Development with Gherkin syntax
+- **TypeScript**: Type-safe test automation
+- **Docker**: Containerized test execution and CI/CD pipeline
+- **GitHub Actions**: Automated testing on every push
+- **Docker Hub Integration**: Automated image builds and deployments
+
+## 📦 Prerequisites
 
 - **Node.js**: v18 or higher
 - **npm**: v9 or higher
-- **Docker**: (Optional) For containerized execution
+- **Docker**: For containerized execution (optional for local development)
+- **Docker Hub Account**: For pushing images (optional)
 
-## 🚀 Quick Start
+## 🛠️ Installation
 
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/IZ-KS/playwright-cucumber-docker.git
 cd playwright-cucumber-docker
 ```
 
-### 2. Install Dependencies
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Install Playwright Browsers
+### 3. Install Playwright browsers (for local development)
 
 ```bash
 npx playwright install
-```
-
-### 4. Run Tests
-
-```bash
-npm test
 ```
 
 ## 📁 Project Structure
@@ -52,28 +48,30 @@ npm test
 ```
 playwright-cucumber-docker/
 ├── .github/
-│   └── workflows/          # GitHub Actions CI/CD
-│       └── playwright.yml
-├── .vscode/                # VS Code settings
+│   └── workflows/
+│       └── docker.yml           # GitHub Actions workflow
+├── .vscode/                     # VS Code settings
 ├── src/
-│   ├── hooks/              # Cucumber hooks
-│   │   ├── hooks.ts        # Before/After hooks
-│   │   └── pageFixtures.ts # Page fixture setup
+│   ├── hooks/                   # Cucumber hooks
+│   │   ├── hooks.ts            # Before/After hooks
+│   │   └── pageFixtures.ts     # Page fixture setup
 │   └── test/
-│       ├── features/       # Gherkin feature files
+│       ├── features/            # Gherkin feature files
 │       │   ├── addToCart.feature
+│       │   ├── checkout.feature
 │       │   └── login.feature
-│       └── steps/          # Step definitions
+│       └── steps/               # Step definitions
 │           ├── addToCart.ts
+│           ├── checkoutSteps.ts
 │           └── loginSteps.ts
-├── test-results/           # Test execution reports
-│   ├── cucumber-report.html
-│   ├── cucumber-report.json
-│   └── screenshots/        # Failure screenshots
+├── test-results/                # Test execution reports
+├── .dockerignore
 ├── .gitignore
-├── cucumber.json           # Cucumber configuration
+├── cucumber.json                # Cucumber configuration
+├── Dockerfile                   # Docker configuration
 ├── package.json
-├── tsconfig.json           # TypeScript configuration
+├── package-lock.json
+├── tsconfig.json
 └── README.md
 ```
 
@@ -81,7 +79,11 @@ playwright-cucumber-docker/
 
 ### Cucumber Configuration
 
-The `cucumber.json` file in the root directory configures test execution:
+The `cucumber.json` file is configured for:
+- TypeScript support with `ts-node`
+- JSON and HTML report generation
+- Parallel execution control
+- Custom timeout settings
 
 ```json
 {
@@ -90,10 +92,10 @@ The `cucumber.json` file in the root directory configures test execution:
     "requireModule": ["ts-node/register"],
     "format": [
       "progress",
-      "html:test-results/cucumber-report.html",
       "json:test-results/cucumber-report.json"
     ],
     "parallel": 1,
+    "timeout": 30000,
     "publishQuiet": true
   }
 }
@@ -101,177 +103,183 @@ The `cucumber.json` file in the root directory configures test execution:
 
 ## 🧪 Running Tests
 
-### Run All Tests (Headless)
+### Run all tests locally
+
 ```bash
 npm test
 ```
 
-### Run Tests in Headed Mode
-```bash
-npm run test:headed
-```
+### Run specific feature file
 
-### Run Tests in Specific Browser
-```bash
-npm run test:chromium
-npm run test:firefox
-npm run test:webkit
-```
-
-### Run Specific Feature File
 ```bash
 npx cucumber-js src/test/features/login.feature
 ```
 
-### Hooks Example
-
-```typescript
-import { Before, After, BeforeAll, AfterAll, Status } from '@cucumber/cucumber';
-import { chromium, Browser } from '@playwright/test';
-import { pageFixture } from './pageFixtures';
-
-let browser: Browser;
-
-BeforeAll(async function () {
-  browser = await chromium.launch({ headless: true });
-});
-
-Before(async function () {
-  const context = await browser.newContext();
-  const page = await context.newPage();
-  pageFixture.page = page;
-});
-
-After(async function ({ pickle, result }) {
-  if (result?.status === Status.FAILED) {
-    const screenshot = await pageFixture.page.screenshot({
-      path: `test-results/screenshots/${pickle.name}.png`,
-      fullPage: true
-    });
-    this.attach(screenshot, 'image/png');
-  }
-  await pageFixture.page.close();
-});
-
-AfterAll(async function () {
-  await browser.close();
-});
-```
-
-## 📊 Test Reports 
-
-After test execution, reports are automatically generated in the `test-results/` directory:
-
-- **HTML Report**: `test-results/cucumber-report.html`
-- **JSON Report**: `test-results/cucumber-report.json`
-- **Screenshots**: `test-results/screenshots/` (captured on test failures)
-
-### View HTML Report
+### Run specific scenario by line number
 
 ```bash
-# macOS/Linux
-open test-results/cucumber-report.html
-
-# Windows
-start test-results/cucumber-report.html
+npx cucumber-js src/test/features/login.feature:10
 ```
 
-## 🐳 Docker Support
+## 🐳 Docker Setup
 
-### Building Docker Image
+### Build Docker image locally
 
 ```bash
 docker build -t playwright-cucumber-tests .
 ```
 
-### Running Tests in Docker
+### Run tests in Docker
 
 ```bash
 docker run --rm -v $(pwd)/test-results:/app/test-results playwright-cucumber-tests
 ```
 
-## 🔄 CI/CD Integration
+### Pull from Docker Hub
 
-This project includes a GitHub Actions workflow that automatically runs tests on every push and pull request.
-
-### Workflow Configuration
-
-The `.github/workflows/playwright.yml` file configures CI/CD:
-
-```yaml
-name: Playwright Tests
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.40.0-jammy
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Run Cucumber tests
-        run: npm test
-      
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: test-results/
-          retention-days: 30
+```bash
+docker pull izks/playwright-cucumber-docker:latest
+docker run --rm -v $(pwd)/test-results:/app/test-results izks/playwright-cucumber-docker:latest
 ```
 
-### Viewing Test Results in CI
+## 🔄 CI/CD with GitHub Actions
 
-1. Navigate to the **Actions** tab in your GitHub repository
-2. Click on the workflow run you want to inspect
-3. Download the `test-results` artifact to view reports locally
+This project uses GitHub Actions for continuous integration and Docker Hub for image registry.
 
-## 🗺️ Roadmap
+### Workflow Features:
+- ✅ Automated testing on every push to `main` or `master`
+- ✅ Builds Docker image with latest Playwright version
+- ✅ Pushes image to Docker Hub (`izks/playwright-cucumber-docker`)
+- ✅ Runs Cucumber tests inside Docker container
+- ✅ Uploads test results as artifacts
 
-Future enhancements planned for this framework:
+### Viewing Test Results
 
-- [ ] Complete Docker containerization
-- [ ] Enhanced Page Object Model implementation
-- [ ] Parallel test execution across multiple browsers
-- [ ] Integration with Allure reporting
-- [ ] API testing capabilities
-- [ ] Visual regression testing
-- [ ] Database integration for test data management
-- [ ] Cross-environment configuration management
+After each workflow run:
+1. Go to the **Actions** tab in your GitHub repository
+2. Click on the workflow run
+3. Download the **cucumber-test-results** artifact to view reports locally
+
+### Docker Hub
+
+Images are automatically pushed to: [`izks/playwright-cucumber-docker`](https://hub.docker.com/r/izks/playwright-cucumber-docker)
+
+Available tags:
+- `latest` - Latest successful build
+- `<commit-sha>` - Specific commit builds
+
+## 📝 Writing Tests
+
+### Feature File Example
+
+```gherkin
+Feature: Shopping Cart Functionality
+
+    Background:
+        Given User can access the application
+        And User is logged in as "standard_user"
+
+    Scenario: Add single item to cart
+        When User adds "Sauce Labs Backpack" to the cart
+        Then The cart icon should show 1 item
+
+    Scenario: Add multiple items to cart
+        When User adds "Sauce Labs Backpack" to the cart
+        And User adds "Sauce Labs Bike Light" to the cart
+        Then The cart icon should show 2 items
+```
+
+### Step Definition Example
+
+```typescript
+import { Given, When, Then } from '@cucumber/cucumber';
+import { expect } from '@playwright/test';
+import { pageFixture } from '../../hooks/pageFixtures';
+
+Given('User is logged in as {string}', async function (username: string) {
+    await pageFixture.page.locator('#user-name').fill(username);
+    await pageFixture.page.locator('#password').fill('secret_sauce');
+    await pageFixture.page.locator('#login-button').click();
+    await pageFixture.page.waitForURL('**/inventory.html', { timeout: 10000 });
+    await pageFixture.page.waitForLoadState('networkidle');
+});
+
+When('User adds {string} to the cart', async function (productName: string) {
+    const productId = productName.toLowerCase().replace(/\s+/g, '-');
+    await pageFixture.page.waitForSelector(`#add-to-cart-${productId}`, { 
+        state: 'visible',
+        timeout: 10000 
+    });
+    await pageFixture.page.locator(`#add-to-cart-${productId}`).click();
+});
+
+Then('The cart icon should show {int} item', async function (count: number) {
+    if (count === 0) {
+        await expect(pageFixture.page.locator('.shopping_cart_badge')).not.toBeVisible();
+    } else {
+        await pageFixture.page.waitForSelector('.shopping_cart_badge', { timeout: 5000 });
+        const cartBadge = await pageFixture.page.locator('.shopping_cart_badge').textContent();
+        expect(Number(cartBadge)).toBe(count);
+    }
+});
+```
+
+## 📊 Test Reports
+
+After test execution, reports are generated in the `test-results/` directory:
+- **Cucumber JSON Report**: `test-results/cucumber-report.json`
+- **Screenshots** (on failure): `test-results/screenshots/`
+
+To view reports locally:
+```bash
+# Windows
+start test-results/cucumber-report.json
+
+# Mac/Linux
+open test-results/cucumber-report.json
+```
+
+## 🚧 Coming Soon
+
+The following features are planned for future releases:
+
+- [ ] **Advanced HTML Reporting** - Integration with Multiple Cucumber HTML Reporter or Allure
+- [ ] **Page Object Model** - Implement POM design pattern for better code organization
+- [ ] **Cross-browser Testing** - Parallel execution across Chrome, Firefox, and Safari
+- [ ] **API Testing** - Add API test automation capabilities
+- [ ] **Visual Regression Testing** - Automated screenshot comparison
+- [ ] **Test Data Management** - External data files and fixtures
+
+Contributions and suggestions are welcome!
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these steps:
-
 1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/AmazingFeature`
-3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
-4. Push to the branch: `git push origin feature/AmazingFeature`
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👤 Author
+## 👥 Authors
 
-**IZ-KS**
-- GitHub: [@IZ-KS](https://github.com/IZ-KS)
+- Isaac Lim - [GitHub Profile](https://github.com/IZ-KS)
 
-## 💬 Support
+## 🙏 Acknowledgments
 
-For questions or issues, please [open an issue](https://github.com/IZ-KS/playwright-cucumber-docker/issues) on GitHub.
+- [Playwright Documentation](https://playwright.dev/)
+- [Cucumber Documentation](https://cucumber.io/docs/cucumber/)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- [Docker Documentation](https://docs.docker.com/)
+
+## 📞 Contact
+
+For questions or issues, please open an issue on GitHub at:
+https://github.com/IZ-KS/playwright-cucumber-docker/issues
 
 ---
 
-⭐ If you find this project helpful, please consider giving it a star!
+⭐ If you find this project helpful, please give it a star!
