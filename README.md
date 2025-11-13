@@ -1,7 +1,5 @@
 # Playwright + Cucumber + Docker Test Automation Framework
 
-![Tests](https://github.com/IZ-KS/playwright-cucumber-docker/workflows/Cucumber%20Tests%20with%20Docker/badge.svg)
-
 ## 📋 Description
 
 This project is an end-to-end test automation framework built with Playwright and Cucumber, containerized with Docker for learning purposes. It follows BDD practices with Gherkin syntax for maintainable and scalable test automation.
