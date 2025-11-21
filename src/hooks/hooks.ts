@@ -1,10 +1,9 @@
-import { BeforeAll, AfterAll, Before, After } from '@cucumber/cucumber';
-import { chromium, Browser, BrowserContext, Page } from 'playwright/test'; // Note: Used 'playwright/test' for the types
-import { pageFixture } from './pageFixtures';    
+import { BeforeAll, AfterAll, Before, After, Status } from '@cucumber/cucumber';
+import { chromium, Browser, BrowserContext } from '@playwright/test';
+import { pageFixture } from './pageFixtures';
 
-// Declare global variables to hold the Browser and Context
+// Declare global variable to hold the Browser
 let browser: Browser;
-let context: BrowserContext; 
 
 // --- 1. Global Browser Setup (Runs ONCE before all scenarios) ---
 BeforeAll(async function () {
@@ -15,17 +14,29 @@ BeforeAll(async function () {
 
 // --- 2. Context/Page Setup (Runs before EACH scenario) ---
 Before(async function () {
-    context = await browser.newContext();
-    pageFixture.context = context; // Store the context in the fixture
+    // Create a NEW context for each scenario
+    const context = await browser.newContext();
+    pageFixture.context = context;
     
     // Create a NEW page in the clean context
     pageFixture.page = await context.newPage();
+    
+    // Initialize all page objects with the new page
+    pageFixture.initializePages();
 });
 
 // --- 3. Context/Page Cleanup (Runs after EACH scenario) ---
-After(async function ({ pickle}) {
-    const img = await pageFixture.page.screenshot({path :`./test-results/screenshot.png/${pickle.name}.png` , type : "png"});
-    await this.attach(img, "image/png");
+After(async function ({ pickle, result }) {
+    // Take screenshot on failure or always (depending on your preference)
+    if (result?.status === Status.FAILED) {
+        const img = await pageFixture.page.screenshot({
+            path: `./test-results/screenshots/${pickle.name}.png`,
+            type: 'png',
+            fullPage: true
+        });
+        await this.attach(img, 'image/png');
+    }
+    
     // Close the context, which automatically closes the page and clears all session data
     if (pageFixture.context) {
         await pageFixture.context.close();

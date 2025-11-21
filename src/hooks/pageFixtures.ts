@@ -1,16 +1,23 @@
 // src/hooks/pageFixtures.ts
 
 import { Page, Browser, BrowserContext } from '@playwright/test';
+import { LoginPage } from '../pages/loginPage';
 
 export class PageFixture {
-    // Stores the single, long-running browser instance
-    public browser!: Browser; 
-    
-    // Stores the isolated context for the current scenario
-    public context!: BrowserContext; 
-    
-    // Stores the page created within the current context
-    public page!: Page; 
+
+     // Base Playwright objects
+    page!: Page;
+    context!: BrowserContext;
+    browser!: Browser;
+
+
+    // Page Objects
+    loginPage!: LoginPage;
+
+     // Initialize page objects
+    initializePages() {
+        this.loginPage = new LoginPage(this.page);
+    }
 }
 
 export const pageFixture = new PageFixture();

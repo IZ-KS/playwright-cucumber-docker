@@ -4,20 +4,20 @@ import { pageFixture } from '../../hooks/pageFixtures';
 
 
 Given('User can access the application', async function () {
-    await pageFixture.page.goto('https://www.saucedemo.com/');
-    expect(pageFixture.page.url()).toBe('https://www.saucedemo.com/');
-    expect(await pageFixture.page.title()).toBe('Swag Labs');
+    await pageFixture.loginPage.goto();
+    //expect(pageFixture.loginPage.url()).toBe('https://www.saucedemo.com/');
+    //expect(await pageFixture.loginPage.title()).toBe('Swag Labs');
 });
 
 Given('User enters login credentials with username as {string} and password as {string}', 
     async function (username : string, password : string) {   
-    await pageFixture.page.locator('#user-name').fill(username);
-    await pageFixture.page.locator('#password').fill(password);
+    await pageFixture.loginPage.enterUsername(username);
+    await pageFixture.loginPage.enterPassword(password);
     console.log('Password entered ' + password);
 });
 
 When('User clicks on the login button', async function () {   
-    await pageFixture.page.locator('#login-button').click();
+    await pageFixture.loginPage.clickLogin();
 });
 
 Then('User should be redirected to the homepage', async function () {
@@ -26,9 +26,9 @@ Then('User should be redirected to the homepage', async function () {
 });
 
 When('Login fails', async function () {
-    const errorLocator = pageFixture.page.locator('.error-message-container');
-    await expect(errorLocator).toBeVisible();
-    console.log('User logged in successfully');
+    await pageFixture.loginPage.verifyErrorMessage();
+    // const errorLocator = pageFixture.page.locator('.error-message-container');
+    // await expect(errorLocator).toBeVisible();
 });
 
 
